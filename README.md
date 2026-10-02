@@ -50,7 +50,8 @@ canvas. Crop mode ignores it.
 
 Every slot can have its own filter: each collage cell, slice or card, and the cropped image. Choose a slot
 (click a cell, or a card in Stack and Polaroid), then use the Filter panel, which is there in both Crop and
-Collage and names the slot it is editing ("overlay" for the cropped image, "panel 2" for a cell). Panel 3 above has Vintage, panel 2 has Noir, panel 4 has Film and panel 5 has Paper.
+Collage and names the slot it is editing ("overlay" for the cropped image, "panel 2" for a cell, or a card's file name,
+shortened to its start and end when it is long, such as `SaveInta...50522_n.jpg`, with the full name on hover). Panel 3 above has Vintage, panel 2 has Noir, panel 4 has Film and panel 5 has Paper.
 
 - **Light**: Light / dark, Contrast and Fade (lifts the blacks for a matte look).
 - **Colour**: Saturation, Warmth, Hue, Sepia and Black and white. Sepia and Black and white are blends, so

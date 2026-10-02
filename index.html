@@ -687,6 +687,8 @@ html[data-design="cobalt"] .panel::before {
     font-size: 11px;
     color: var(--fg-faint);
 }
+.panel-head .sub { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.panel-head h2 { flex: none; }
 .panel-head .sub::before { content: "["; }
 .panel-head .sub::after  { content: "]"; }
 .prose { max-width: var(--read); color: var(--fg-dim); text-align: left; }
@@ -1464,7 +1466,7 @@ html[data-design="contour"] .seg.seg-4 { border-radius: var(--radius-sm); }
 "use strict";
 
 /* ---------- app identity ---------- */
-const APP = { id: "wall-craft", version: "1.12.0", schema: 1 };
+const APP = { id: "wall-craft", version: "1.12.1", schema: 1 };
 const LEGACY_IDS = ["wall-fit"];       // the tool's earlier name: its saved browser data and settings files are still accepted
 
 /* ---------- dom helpers ---------- */
@@ -2896,11 +2898,12 @@ function repairSlot() {
         return im && r ? { im: im, kind: "cell", label: cellName() + (i + 1), frame: { x: 0, y: 0, w: Math.max(1, Math.round(r.w)), h: Math.max(1, Math.round(r.h)) }, tfm: c, place: id => { cellList()[i] = tf(id); } } : null;
     }
     const im = IMGS.get(ensureSelCard());
-    return im ? { im: im, kind: "card", label: im.name } : null;
+    return im ? { im: im, kind: "card", label: shortName(im.name), full: im.name } : null;
 }
 function syncRepair() {
     const sl = repairSlot(), im = sl && sl.im;
     $("#rpLabel").textContent = sl ? sl.label : "load an image";
+    $("#rpLabel").title = sl && sl.full ? sl.full : "";
     $("#btnFillBars").disabled = busy || !sl || sl.kind === "card";
     $("#btnFillCancel").hidden = !(busy && fillRunning);
     const hb = $("#btnHeal");
@@ -4191,7 +4194,13 @@ function fxTarget() {
     }
     const id = ensureSelCard();
     if (!id) return null;
-    return { label: IMGS.get(id).name, get: () => state.cardFx[id] || null, set: v => { if (v) state.cardFx[id] = v; else delete state.cardFx[id]; } };
+    return { label: shortName(IMGS.get(id).name), full: IMGS.get(id).name, get: () => state.cardFx[id] || null, set: v => { if (v) state.cardFx[id] = v; else delete state.cardFx[id]; } };
+}
+/* A long file name, cut to its start and its end so the tail (the part that tells names apart) survives:
+   SaveInta.com_772714535_17982458808063590_7972500178533850522_n.jpg becomes SaveInta...50522_n.jpg. */
+function shortName(n) {
+    const a = Array.from(String(n));
+    return a.length <= 22 ? a.join("") : a.slice(0, 8).join("") + "..." + a.slice(-11).join("");
 }
 const fxInputs = {};
 (function buildFxPanel() {
@@ -4230,6 +4239,7 @@ function fxSet(k, v) {
 function syncFx() {
     const t = fxTarget(), f = t && t.get();
     $("#fxLabel").textContent = t ? t.label : "load an image";
+    $("#fxLabel").title = t && t.full ? t.full : "";
     FX.forEach(d => {
         const q = fxInputs[d.k], v = f ? f[d.k] : 0;
         q.input.disabled = !t;
