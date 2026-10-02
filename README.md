@@ -21,10 +21,6 @@ as a static page. Images are decoded and drawn in your browser and never uploade
   Fit width and Fit height set the zoom so that edge of the image matches the cell.
 - **Panels**: columns by rows with a gap, an outer margin and a border of your choice. Gap, margin and border
   are tenths of a percent of the width, so a layout looks the same at every export size.
-- **Taskbar offset** (Panels and Custom): keeps a strip along the bottom, top, left or right clear, so nothing
-  sits under the taskbar. Its size is shown in pixels at the current export size (5% of a 1080 px height is
-  54 px). Margin is measured from the edge of that strip. The preview marks the strip with a dashed line,
-  and the strip shows the background colour or gradient.
 - **Grid**: columns by rows, edge to edge, no gaps or borders, on whole-pixel edges so there are no seams. One
   row gives borderless vertical strips.
 - **Custom**: your own layout of merged and split cells, for a hero image or a bento arrangement. See below.
@@ -38,20 +34,60 @@ as a static page. Images are decoded and drawn in your browser and never uploade
 
 ![Polaroid layout](docs/screenshot-polaroid.png)
 
+#### Taskbar offset
+
+On by default: 48 px at the bottom of a 1080 px high canvas, the height of a standard Windows taskbar. It keeps a strip along one edge clear in every
+collage layout (Panels, Grid, Custom, Diagonal, Stack and Polaroid), so nothing sits under the taskbar. Pick
+the edge (Off, Bottom, Top, Left or Right) and a size. The size is shown in pixels at the current export size
+and scales with it (about 4.4% of the height, so 48 px at 1080 and 64 px at 1440). Saved sessions that still have the old 70 px default are moved to 48 px, and any other size you chose is kept. The strip is whole pixels, and it
+shows the background colour or gradient. The preview marks it with a dashed line. Margin is measured from the
+edge of the strip, and cards in Stack and Polaroid stay wholly clear of it. Set it to Off to use the whole
+canvas. Crop mode ignores it.
+
+#### Filters
+
+![Filters](docs/screenshot-filters.png)
+
+Every slot can have its own filter: each collage cell, slice or card, and the cropped image. Choose a slot
+(click a cell, or a card in Stack and Polaroid), then use the Filter panel, which is there in both Crop and
+Collage and names the slot it is editing ("overlay" for the cropped image, "panel 2" for a cell). Panel 3 above has Vintage, panel 2 has Noir, panel 4 has Film and panel 5 has Paper.
+
+- **Light**: Light / dark, Contrast and Fade (lifts the blacks for a matte look).
+- **Colour**: Saturation, Warmth, Hue, Sepia and Black and white. Sepia and Black and white are blends, so
+  50 is half way.
+- **Effects**: Blur, Vignette, Grain (fine noise), Paper texture (soft fibres and a slightly warm cast) and
+  Weave (a woven pattern turned 45 degrees, so every cell is a diamond, with neighbouring threads alternating
+  over and under).
+- **Presets**: Vivid, Noir, Vintage, Film, Cool, Dreamy, Paper and Weave set a whole look in one click, and
+  the sliders then fine-tune it. Double-click a slider to zero it, Reset filter clears the slot, and Apply to
+  all copies the current look to every slot.
+- **A filter belongs to the slot, not the picture.** Swapping two pictures with the corner handle leaves each
+  slot's look where it is. In the custom grid designer a merged cell keeps its first filter, and a split cell's
+  first half keeps it. In Stack and Polaroid there are no slots, so click a card to choose which one is edited
+  (it is outlined), and its filter then goes with that card.
+- Filters change the picture only, not the background, the gaps or a polaroid's frame, and empty parts of a slot
+  stay empty. They do not cross a diagonal cut.
+- Preview and export match exactly. The filters are applied by this page rather than by the browser's canvas
+  filter property, which Safari does not support. The preview keeps each slot's filtered result and only redoes
+  the slot you are changing, and the export filters at full resolution, which adds a second or two for a 4K
+  collage with every effect on. Texture sizes are fixed in export pixels, so a grain or a weave looks the same
+  size in the preview as in the file.
+
 #### Diagonal slices
 
 ![Diagonal slices](docs/screenshot-diagonal.png)
 
 A wide image and a portrait one, joined by a slanted cut with a thin line along it.
 
-- **Slices** sets how many images there are (2 to 6), separated by parallel cuts, left to right.
-- **Position** puts the last cut at that percentage of the width, measured at mid height. With two slices
+- **Slices** sets how many images there are (2 to 6), separated by parallel cuts, left to right. The defaults
+  are 2 slices, a cut at 70%, 3 degrees, a 5 px white line, inside the taskbar-free area.
+- **Position** puts the last cut at that percentage of the usable width (the canvas minus the taskbar strip), measured at mid height. With two slices
   that is the one cut, so 66 to 75 gives the usual two-thirds or three-quarters look. With more slices the
   earlier cuts spread evenly before it.
 - **Angle** leans the cut, from -60 to 60 degrees. 0 is a straight vertical cut and a positive angle leans
   the top of the line to the right.
-- **Line thickness** is measured across the line, shown in pixels at the current export size, and 0 removes
-  the line. **Line colour** uses the colour picker, including sampling from your images.
+- **Line thickness** is measured across the line, shown in pixels at the current export size (5 px at 1920
+  wide, and it scales with the export), and 0 removes the line. **Line colour** uses the colour picker, including sampling from your images.
 - Each slice keeps its own zoom and position (drag inside it, wheel to zoom), and the corner handle swaps
   two slices. Slices meet with a sub-pixel overlap, so there is no hairline of background between them even
   with the line off.
@@ -76,7 +112,7 @@ press Apply layout, so Cancel (or Esc) throws it away.
   reading order. Dashed lines inside a cell show the units it is made of.
 - It works with the keyboard: arrow keys move a cursor and Shift with the arrows selects a block. Focus
   stays inside the popup, and Esc closes it. On a phone it becomes one column and a finger drag selects.
-- Gap, outer margin, border and the taskbar offset apply to a custom layout the same way as to Panels. Each cell keeps its own
+- Gap, outer margin and border apply to a custom layout the same way as to Panels, inside the taskbar-free area. Each cell keeps its own
   zoom and position, and the corner handle swaps two cells.
 
 ### Crop
@@ -102,10 +138,13 @@ press Apply layout, so Cancel (or Esc) throws it away.
 
 ![Repair panel](docs/screenshot-repair.png)
 
-Crop mode only.
+Available in Crop and in Collage. The panel's header shows what it is acting on: the crop image, the selected
+cell or slice, or the selected card.
 
-- **Fill bars** fills the part of the frame the image does not cover. It makes a new image in the list at
-  the export size, sitting at zoom 1, and leaves the original alone.
+- **Fill bars** fills the part of the frame (Crop) or of the selected cell (Collage, in Panels, Grid, Custom
+  and Diagonal) that the image does not cover. It makes a new image in the list at the size of that area at
+  the export size, puts it in the slot at zoom 1, and leaves the original alone. Cards in Stack and Polaroid
+  always fill their photo area, so there is nothing to fill and the button is off.
   - **Content-aware** continues texture and edges from the image. It is multi-scale PatchMatch with patch
     voting, the family of method behind Photoshop's content-aware fill. It suits sky, water, grass, walls
     and bokeh, for bars up to about a third of the frame per side.
@@ -113,7 +152,9 @@ Crop mode only.
     instant fallbacks for content where content-aware smears.
   - Content-aware runs in slices so the page stays responsive, shows progress, and can be cancelled.
 - **Heal brush**: turn it on, paint over a blemish, release. The area is rebuilt from the pixels around it.
-  Up to 6 undo steps per image.
+  Up to 6 undo steps per image. In Collage, paint on any cell, slice or card: the stroke goes to the picture
+  under the brush, however it is zoomed, panned or tilted, and that cell or card is selected. The fix is made to
+  the picture itself, so it shows everywhere that picture is used.
 
 ![Fill bars, before and after](docs/screenshot-fill-before-after.png)
 
@@ -138,12 +179,18 @@ cannot.
   export. The name is not remembered between visits, so an old name is never reused by accident.
 - A warning appears when a source is being enlarged to fill the export size.
 
+## Collapsible side panels
+
+Every section of the left column folds: click its header, or focus the heading and press Enter or Space. The
+header keeps its title and count when folded. Expand all and Collapse all sit above the first section, and your
+choices are remembered between visits. Selected, Filter, Repair and Settings start folded.
+
 ## Settings files
 
 > Previously called wall-fit. Settings files and saved browser data from that name still load, and the design, mode
 > and accent are carried over automatically on first open.
 
-Save settings writes every control (mode, ratio, layout, colours, seed, card positions) to one JSON file.
+Save settings writes every control (mode, ratio, layout, colours, seed, card positions, filters) to one JSON file.
 Load settings reads it back, validating each field. `Ctrl+S` saves, `Ctrl+O` loads. Settings are also kept
 in this browser between visits. Images are held in memory only, so after a reload the settings come back and
 the pictures have to be loaded again.
@@ -171,8 +218,9 @@ canvas.
   full image. Zoom in far enough and the preview switches to the full image on its own.
 - Settings files from before Slices was folded into Grid still load: they become a one-row grid with the same
   number of columns.
-- Card positions from dragging are tied to the order images were loaded, so they come back with a settings
-  file only if you load the same images in the same order. They are dropped on a plain page reload.
+- Card positions from dragging, and Stack or Polaroid filters, are tied to the order images were loaded, so they
+  come back with a settings file only if you load the same images in the same order. They are dropped on a plain
+  page reload. Filters on cells, slices and the crop image belong to their slot and always come back.
 - A settings file over 2 MB is refused (they are a few KB).
 - Fill bars treats transparent pixels in an image as empty, so a PNG with transparent corners gets them
   filled too.
