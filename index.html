@@ -996,7 +996,7 @@ html[data-design="contour"] .seg.seg-fill { border-radius: var(--radius-sm); }
    ============================================================ */
 [hidden] { display: none !important; }
 .wk { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: var(--gap); align-items: start; }
-.wk-side { min-width: 0; }
+.wk-side { min-width: 0; position: sticky; top: calc(var(--bar) + 14px); height: var(--side-h, calc(100vh - 130px)); min-height: 440px; display: flex; flex-direction: column; }
 .wk-main { position: sticky; top: calc(var(--bar) + 14px); min-width: 0; }
 .stack12 { display: flex; flex-direction: column; gap: 12px; }
 
@@ -1073,7 +1073,6 @@ input[type="range"] { width: 100%; accent-color: var(--accent); margin: 2px 0; }
 @media print { .modal { display: none !important; } }
 
 /* ---------- collapsible side panels ---------- */
-.foldbar { display: flex; justify-content: flex-end; gap: 6px; margin-bottom: 8px; }
 .wk-side .panel-head { cursor: pointer; user-select: none; }
 .fold-btn { display: inline-flex; align-items: center; gap: 8px; padding: 0; margin: 0; background: none; border: 0; font: inherit; color: inherit; letter-spacing: inherit; text-transform: inherit; text-align: left; cursor: pointer; }
 .fold-btn svg { width: 11px; height: 11px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; color: var(--fg-dim); transition: transform 0.15s; }
@@ -1089,6 +1088,60 @@ input[type="range"] { width: 100%; accent-color: var(--accent); margin: 2px 0; }
 @media (hover: hover) { .seg-4 button:hover:not(:disabled) { color: var(--accent); background: var(--accent-soft); } }
 .seg-4 button:disabled { opacity: 0.45; cursor: default; }
 html[data-design="contour"] .seg.seg-4 { border-radius: var(--radius-sm); }
+
+/* ---------- side panel: tabs, scrolling area, pinned export ---------- */
+.tabbar { flex: none; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.stabs { flex: 1; min-width: 0; display: flex; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--sunken); overflow: hidden; }
+.stab { flex: 1; position: relative; padding: 8px 6px; font: inherit; font-size: 13px; color: var(--fg-dim); background: transparent; border: 0; border-right: 1px solid var(--line); cursor: pointer; }
+.stab:last-child { border-right: 0; }
+@media (hover: hover) { .stab:not([aria-selected="true"]):hover { color: var(--accent); background: var(--accent-soft); } }
+.stab[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); }
+.stab:focus-visible { outline: 2px solid var(--accent); outline-offset: -3px; }
+.stab-dot { display: inline-block; width: 6px; height: 6px; margin-left: 6px; border-radius: 50%; background: var(--accent); vertical-align: middle; }
+.stab[aria-selected="true"] .stab-dot { background: var(--accent-ink); }
+html[data-design="contour"] .stabs { border-radius: 999px; }
+html[data-design="chamfer"] .stabs { border-radius: 0; }
+.tabscroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; padding-right: 2px; }
+.spane[hidden] { display: none; }
+.spane > .panel:last-child { margin-bottom: 4px; }
+.edit-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; padding: 7px 10px; font-size: 12px; color: var(--fg-dim); background: var(--sunken); border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.edit-head b { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--fg); font-weight: 600; }
+.edit-head .chip { flex: none; padding: 1px 7px; font-size: 11px; color: var(--accent); border: 1px solid var(--accent); border-radius: 999px; }
+.exportbar { flex: none; margin: 10px 0 0; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.exportbar .field { width: 100%; }
+.eb-row { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.eb-row .btn-primary { flex: 1; }
+.eb-log { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.exportbar .seg { align-self: auto; }
+@media (max-width: 980px) {
+    .wk-side { position: static; height: auto; min-height: 0; display: block; }
+    .tabbar { position: sticky; top: var(--hdr, var(--bar)); z-index: 20; padding: 6px 0; background: var(--bg); margin-bottom: 4px; }
+    .tabscroll { overflow: visible; }
+    .exportbar { position: sticky; bottom: 0; z-index: 20; }
+}
+
+/* ---------- sliders on one line, with a value you can type ---------- */
+.wk-side label.f.sl { display: grid; grid-template-columns: minmax(64px, 34%) minmax(0, 1fr) 62px; align-items: center; column-gap: 8px; }
+.wk-side label.f.sl .lab { display: contents; }
+.wk-side label.f.sl input[type="range"] { grid-column: 2; grid-row: 1; margin: 0; }
+.wk-side label.f.sl .val { grid-column: 3; grid-row: 1; text-align: right; white-space: nowrap; }
+.val[role="button"] { cursor: text; padding: 1px 3px; border-radius: 3px; }
+@media (hover: hover) { .val[role="button"]:hover { color: var(--accent); background: var(--sunken); } }
+.val[role="button"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.val .numval { width: 100%; padding: 0 3px; font: inherit; text-align: right; color: var(--fg); background: var(--sunken); border: 1px solid var(--accent); border-radius: 3px; outline: none; }
+
+/* ---------- filter groups ---------- */
+.fxg { display: flex; flex-direction: column; }
+.fxg-h { display: flex; align-items: center; gap: 8px; width: 100%; padding: 6px 0; font: inherit; font-size: 12px; color: var(--fg-dim); text-align: left; background: none; border: 0; border-bottom: 1px solid var(--line-soft); cursor: pointer; }
+.fxg-h svg { width: 10px; height: 10px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; transition: transform 0.15s; }
+.fxg.closed .fxg-h svg { transform: rotate(-90deg); }
+.fxg-h:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+@media (hover: hover) { .fxg-h:hover { color: var(--accent); } }
+.fxg-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+.fxg-b { display: flex; flex-direction: column; gap: 8px; padding: 10px 0 4px; }
+.fxg.closed .fxg-b { display: none; }
+
+.tray-actions { margin-top: 10px; }
 </style>
 </head>
 <body>
@@ -1228,8 +1281,17 @@ html[data-design="contour"] .seg.seg-4 { border-radius: var(--radius-sm); }
 
         <div class="wk-side noprint">
 
-            <div class="foldbar"><button class="btn btn-sm btn-ghost" id="unfoldAll">Expand all</button><button class="btn btn-sm btn-ghost" id="foldAll">Collapse all</button></div>
+            <div class="tabbar">
+                <div class="stabs" role="tablist" aria-label="Side panel sections">
+                    <button class="stab" id="stab-src" role="tab" aria-selected="true" aria-controls="sp-src" type="button">Source</button>
+                    <button class="stab" id="stab-lay" role="tab" aria-selected="false" aria-controls="sp-lay" tabindex="-1" type="button">Layout</button>
+                    <button class="stab" id="stab-edit" role="tab" aria-selected="false" aria-controls="sp-edit" tabindex="-1" type="button">Edit<i class="stab-dot" id="stabDot" hidden></i></button>
+                </div>
+                <button class="btn btn-sm btn-ghost" id="foldToggle" type="button" title="Collapse or expand every section">Collapse all</button>
+            </div>
 
+            <div class="tabscroll">
+                <div class="spane" id="sp-src" role="tabpanel" aria-labelledby="stab-src">
             <div class="panel">
                 <div class="panel-head"><h2>Images</h2><span class="sub" id="trayCount">0 loaded</span></div>
                 <div class="drop" id="drop" tabindex="0" role="button">
@@ -1238,10 +1300,24 @@ html[data-design="contour"] .seg.seg-4 { border-radius: var(--radius-sm); }
                 </div>
                 <input type="file" id="imgIn" accept="image/*" multiple hidden>
                 <div class="tray" id="tray"></div>
+                <div class="row tray-actions" id="trayActions" hidden><div class="spacer"></div><button class="btn btn-sm btn-ghost btn-danger" id="btnClearImgs" type="button">Clear all images</button></div>
             </div>
 
             <div class="panel">
-                <div class="panel-head"><h2>Output</h2><span class="sub" id="outSub">1920x1080</span></div>
+                <div class="panel-head"><h2>Settings</h2><span class="sub">json</span></div>
+                <div class="row">
+                    <button class="btn btn-sm" id="btnLoad">Load settings</button>
+                    <button class="btn btn-sm" id="btnSave">Save settings</button>
+                    <div class="spacer"></div>
+                    <button class="btn btn-sm btn-ghost btn-danger" id="btnReset">Reset</button>
+                </div>
+                <input type="file" id="fileIn" accept=".json,application/json" hidden>
+                <div class="note" style="margin-top:10px">Ctrl+S saves, Ctrl+O loads. Images are not saved, so load them again after a refresh.</div>
+            </div>
+                </div>
+                <div class="spane" id="sp-lay" role="tabpanel" aria-labelledby="stab-lay" hidden>
+            <div class="panel">
+                <div class="panel-head"><h2>Canvas</h2><span class="sub" id="outSub">1920x1080</span></div>
                 <div class="stack12">
                     <div><div class="fl">Mode</div>
                         <div class="seg" data-key="mode" role="group" aria-label="Mode">
@@ -1286,7 +1362,7 @@ html[data-design="contour"] .seg.seg-4 { border-radius: var(--radius-sm); }
                         <label class="f"><span class="lab">Outer margin <span class="val" data-out="margin"></span></span><input type="range" min="0" max="40" step="1" data-key="margin"></label>
                         <label class="f"><span class="lab">Border <span class="val" data-out="bw"></span></span><input type="range" min="0" max="10" step="0.1" data-key="bw"></label>
                         <label class="f">Border colour<button type="button" class="cswatch" data-color="bc" aria-label="Border colour" aria-haspopup="dialog" aria-expanded="false"><span class="chip"></span><span class="hex"></span></button></label>
-                        <div class="note">Gap, margin and border are tenths of a percent of the width, so they scale with the export size. Margin is measured from the edge of the taskbar strip.</div>
+                        <div class="note">Gap, margin and border scale with the export size. Margin is measured from the edge of the taskbar strip.</div>
                         </div>
                         <div class="note" data-when="grid">Edge to edge, no gaps. Use Panels if you want gaps or borders.</div>
                     </div>
@@ -1297,7 +1373,7 @@ html[data-design="contour"] .seg.seg-4 { border-radius: var(--radius-sm); }
                                 <button data-v="off">Off</button><button data-v="bottom">Bottom</button><button data-v="top">Top</button><button data-v="left">Left</button><button data-v="right">Right</button>
                             </div></div>
                         <label class="f" data-when="tbon"><span class="lab">Taskbar size <span class="val" data-out="tb"></span></span><input type="range" min="0" max="100" step="0.1" data-key="tb"></label>
-                        <div class="note" data-when="tbon">Keeps a strip along one edge clear in every collage layout, so nothing sits under the taskbar. The size is shown in pixels at the current export size and scales with it.</div>
+                        <div class="note" data-when="tbon">Keeps a strip clear in every collage layout, so nothing sits under the taskbar. Size is in export pixels.</div>
                     </div>
 
                     <div class="stack12" data-when="diagonal">
@@ -1306,7 +1382,7 @@ html[data-design="contour"] .seg.seg-4 { border-radius: var(--radius-sm); }
                         <label class="f"><span class="lab">Angle <span class="val" data-out="dangle"></span></span><input type="range" min="-60" max="60" step="0.5" data-key="dangle"></label>
                         <label class="f"><span class="lab">Line thickness <span class="val" data-out="dthick"></span></span><input type="range" min="0" max="30" step="0.1" data-key="dthick"></label>
                         <label class="f">Line colour<button type="button" class="cswatch" data-color="dcolor" aria-label="Line colour" aria-haspopup="dialog" aria-expanded="false"><span class="chip"></span><span class="hex"></span></button></label>
-                        <div class="note">Parallel diagonal cuts, left to right, one image per slice. Position moves the last cut and the others spread evenly before it. Angle 0 is a straight vertical cut, and a positive angle leans the top of the line to the right. Thickness 0 removes the line.</div>
+                        <div class="note">Parallel cuts, one image per slice. Position moves the last cut. Angle 0 is vertical and a positive angle leans the top right. Thickness 0 hides the line.</div>
                     </div>
 
                     <div class="stack12" data-when="bento">
@@ -1337,12 +1413,16 @@ html[data-design="contour"] .seg.seg-4 { border-radius: var(--radius-sm); }
                     </div>
                 </div>
             </div>
-
+                </div>
+                <div class="spane" id="sp-edit" role="tabpanel" aria-labelledby="stab-edit" hidden>
+                    <div class="edit-head" id="editHead"><span class="eh-k">Editing</span><b id="ehName">nothing selected</b><span class="chip" id="ehFx" hidden>filter on</span></div>
             <div class="panel" data-when="selectable">
                 <div class="panel-head"><h2>Selected</h2><span class="sub" id="selLabel">none</span></div>
                 <div class="stack12">
                     <label class="f"><span class="lab">Zoom <span class="val" id="zoomOut"></span></span><input type="range" id="zoom" min="0.1" max="4" step="0.01" value="1"></label>
-                    <div class="row"><button class="btn btn-sm" id="btnFitW">Fit width</button><button class="btn btn-sm" id="btnFitH">Fit height</button><button class="btn btn-sm" id="btnResetT">Reset</button></div>
+                    <label class="f"><span class="lab">Straighten <span class="val" id="rotOut"></span></span><input type="range" id="rot" min="-45" max="45" step="0.1" value="0"></label>
+                    <div class="row"><button class="btn btn-sm" id="btnFlipH" title="Mirror the picture left to right, as you see it">Flip horizontal</button><button class="btn btn-sm" id="btnFlipV" title="Mirror the picture top to bottom, as you see it">Flip vertical</button><button class="btn btn-sm" id="btnRot90" title="Turn the picture 90 degrees clockwise">Rotate 90</button></div>
+                    <div class="row"><button class="btn btn-sm" id="btnFitW">Fit width</button><button class="btn btn-sm" id="btnFitH">Fit height</button><button class="btn btn-sm" id="btnResetT" title="Zoom, position, flips and rotation">Reset</button></div>
                 </div>
             </div>
 
@@ -1352,7 +1432,7 @@ html[data-design="contour"] .seg.seg-4 { border-radius: var(--radius-sm); }
                     <div class="seg seg-4" id="fxPresets" role="group" aria-label="Filter presets"></div>
                     <div class="stack12" id="fxBody"></div>
                     <div class="row"><button class="btn btn-sm" id="fxAll">Apply to all</button><button class="btn btn-sm btn-ghost btn-danger" id="fxReset">Reset filter</button></div>
-                    <div class="note">A filter belongs to the slot, not the picture: swapping two pictures leaves each slot's look where it is. Double-click a slider to zero it. In Stack and Polaroid, click a card to choose which one is edited.</div>
+                    <div class="note">A filter stays with its slot when pictures are swapped. Double-click a slider to zero it. In Stack and Polaroid, click a card to choose one.</div>
                 </div>
             </div>
 
@@ -1361,53 +1441,37 @@ html[data-design="contour"] .seg.seg-4 { border-radius: var(--radius-sm); }
                 <div class="stack12">
                     <div><div class="fl">Fill empty bars</div>
                         <div class="seg" data-key="fillMode" role="group" aria-label="Fill method">
-                            <button data-v="content">Content-aware</button><button data-v="mirror">Mirror</button><button data-v="blur">Blur</button>
+                            <button data-v="content" title="Continues texture and edges from the image. Best on sky, water and grass. It cannot invent faces or objects.">Content-aware</button><button data-v="mirror" title="Reflects the image into the empty area.">Mirror</button><button data-v="blur" title="A softened, scaled copy of the image behind it.">Blur</button>
                         </div></div>
                     <div class="row">
                         <button class="btn btn-sm btn-primary" id="btnFillBars">Fill bars</button>
                         <button class="btn btn-sm btn-ghost btn-danger" id="btnFillCancel" hidden>Cancel</button>
                     </div>
                     <div class="log" id="fillInfo"></div>
-                    <div class="note">Fill works on the area the image does not cover: the frame in Crop mode, or the selected cell in Collage. It makes a new image in the list, sized to that area at the export size, puts it in the slot, and leaves the original alone. Content-aware continues texture and edges from the image, and is best on sky, water, grass and similar. It cannot invent faces or objects. Cards in Stack and Polaroid always fill their frame, so there is nothing to fill.</div>
+                    <div class="note">Fills the area the image does not cover into a new image: the frame in Crop, the selected cell in Collage. Not for Stack or Polaroid cards.</div>
                     <div class="fl" style="margin-top:4px">Heal brush</div>
                     <div class="row">
                         <button class="btn btn-sm" id="btnHeal" aria-pressed="false">Heal brush: off</button>
                         <button class="btn btn-sm" id="btnUndo">Undo heal</button>
                     </div>
                     <label class="f"><span class="lab">Brush size <span class="val" data-out="brush"></span></span><input type="range" min="8" max="200" step="1" data-key="brush"></label>
-                    <div class="note">With the brush on, paint over a blemish and release. It is rebuilt from the pixels around it, at the image's own resolution. It works on the cropped image, or on whichever cell or card you paint on in Collage. It edits the picture itself, so the fix shows everywhere that picture is used.</div>
+                    <div class="note">Paint over a blemish and release. It works on the crop image, or the cell or card you paint on, and fixes the picture itself.</div>
+                </div>
+            </div>
                 </div>
             </div>
 
-            <div class="panel">
-                <div class="panel-head"><h2>Export</h2><span class="sub">png, jpeg, webp</span></div>
-                <div class="stack12">
+            <div class="panel exportbar" role="region" aria-label="Export">
+                <input type="text" class="field" id="outName" maxlength="100" spellcheck="false" autocomplete="off" aria-label="File name" aria-describedby="outPreview">
+                <div class="eb-row">
                     <div class="seg" data-key="fmt" role="group" aria-label="Format">
-                        <button data-v="png">PNG lossless</button><button data-v="jpeg">JPEG</button><button data-v="webp">WebP</button>
+                        <button data-v="png" title="Lossless">PNG</button><button data-v="jpeg">JPEG</button><button data-v="webp">WebP</button>
                     </div>
-                    <label class="f" data-when="lossy"><span class="lab">Quality <span class="val" data-out="quality"></span></span><input type="range" min="40" max="100" step="1" data-key="quality"></label>
-                    <label class="f">File name
-                        <input type="text" class="field" id="outName" maxlength="100" spellcheck="false" autocomplete="off" aria-describedby="outPreview">
-                    </label>
-                    <div class="log" id="outPreview"></div>
-                    <div class="row">
-                        <button class="btn btn-primary" id="btnExport">Export image</button>
-                        <button class="btn" id="btnSize">Check size</button>
-                    </div>
-                    <div class="log" id="expInfo"></div>
+                    <button class="btn btn-primary" id="btnExport">Export image</button>
                 </div>
-            </div>
-
-            <div class="panel">
-                <div class="panel-head"><h2>Settings</h2><span class="sub">json</span></div>
-                <div class="row">
-                    <button class="btn btn-sm" id="btnLoad">Load settings</button>
-                    <button class="btn btn-sm" id="btnSave">Save settings</button>
-                    <div class="spacer"></div>
-                    <button class="btn btn-sm btn-ghost btn-danger" id="btnReset">Reset</button>
-                </div>
-                <input type="file" id="fileIn" accept=".json,application/json" hidden>
-                <div class="note" style="margin-top:10px">Ctrl+S saves, Ctrl+O loads. Settings are kept in this browser. Images are not saved, they have to be loaded again.</div>
+                <label class="f" data-when="lossy"><span class="lab">Quality <span class="val" data-out="quality"></span></span><input type="range" min="40" max="100" step="1" data-key="quality"></label>
+                <div class="eb-row"><div class="log eb-log" id="outPreview"></div><button class="btn btn-sm btn-ghost" id="btnSize">Check size</button></div>
+                <div class="log" id="expInfo"></div>
             </div>
         </div>
 
@@ -1466,7 +1530,7 @@ html[data-design="contour"] .seg.seg-4 { border-radius: var(--radius-sm); }
 "use strict";
 
 /* ---------- app identity ---------- */
-const APP = { id: "wall-craft", version: "1.12.1", schema: 1 };
+const APP = { id: "wall-craft", version: "1.15.0", schema: 1 };
 const LEGACY_IDS = ["wall-fit"];       // the tool's earlier name: its saved browser data and settings files are still accepted
 
 /* ---------- dom helpers ---------- */
@@ -1949,7 +2013,7 @@ function blankState() {
         cols: 5, rows: 1,
         dn: 2, dpos: 70, dangle: 3, dthick: 2.6, dcolor: "#ffffff",     // diagonal: slices, last cut as % of width, lean in degrees, line thickness in tenths of a % of width (2.6 is 5px at 1920 wide)
         tb: 44.4, tbEdge: "bottom", // taskbar offset: edge (or "off") and size in tenths of a % of the canvas, height for top or bottom and width for left or right (44.4 is 48px at 1080 high)
-        fx: { panels: [], grid: [], bento: [], diagonal: [] }, cropFx: null, cardFx: {},   // filters: one per slot (they stay put when pictures are swapped), for the crop image, and per card by image id
+        fx: { panels: [], grid: [], bento: [], diagonal: [] }, cropFx: null, cardFx: {}, cardT: {},   // cardT: zoom and position of each card's picture, by image id. filters: one per slot (they stay put when pictures are swapped), for the crop image, and per card by image id
         bento: { cols: 4, rows: 3, rects: BENTO_PRESETS.bento.rects.map(r => r.slice()) },   // custom grid: units and cells as [x, y, w, h]
         gap: 10, margin: 10, bw: 1, bc: "#ffffff",
         fillMode: "content", brush: 40,   // content | mirror | blur ; brush diameter in preview px
@@ -1970,7 +2034,15 @@ let state = blankState();
 const num = (v, lo, hi, d) => { v = Number(v); return isFinite(v) ? Math.min(hi, Math.max(lo, v)) : d; };
 const oneOf = (v, list, d) => list.indexOf(v) >= 0 ? v : d;
 const HEX = /^#[0-9a-f]{6}$/i;
-function cleanT(o) { o = o || {}; return { img: null, z: num(o.z, ZMIN, ZMAX, 1), ox: num(o.ox, -3, 3, 0), oy: num(o.oy, -3, 3, 0) }; }
+function cleanT(o) {
+    o = o || {};
+    const t = { img: null, z: num(o.z, ZMIN, ZMAX, 1), ox: num(o.ox, -3, 3, 0), oy: num(o.oy, -3, 3, 0) };
+    const rot = Math.round(num(o.rot, -45, 45, 0) * 10) / 10, q = ((Math.round(num(o.q, -1000, 1000, 0)) % 4) + 4) % 4;
+    if (rot) t.rot = rot;
+    if (q) t.q = q;
+    if (o.f === true) t.f = true;
+    return t;
+}
 function sanitize() {
     const s = state, b = blankState();
     s.mode = oneOf(s.mode, ["crop", "collage"], b.mode);
@@ -2016,6 +2088,9 @@ function sanitize() {
     const cfx = {}, cs = s.cardFx && typeof s.cardFx === "object" ? s.cardFx : {};
     Object.keys(cs).slice(0, 64).forEach(k => { const v = IDRE.test(k) ? cleanFx(cs[k]) : null; if (v) cfx[k] = v; });
     s.cardFx = cfx;
+    const ct = {}, cts = s.cardT && typeof s.cardT === "object" ? s.cardT : {};
+    Object.keys(cts).slice(0, 64).forEach(k => { if (IDRE.test(k) && cts[k] && typeof cts[k] === "object") ct[k] = cleanT(cts[k]); });
+    s.cardT = ct;
     const cells = {};
     ["panels", "grid", "bento", "diagonal"].forEach(k => {
         const a = s.cells && Array.isArray(s.cells[k]) ? s.cells[k].slice(0, 72) : [];
@@ -2044,7 +2119,7 @@ function restore() {
         const d = JSON.parse(raw);
         if (d && (d.app === APP.id || LEGACY_IDS.indexOf(d.app) >= 0)) {
             state = mergeKnown(d); sanitize();
-            state.pos = {}; state.front = []; state.cardFx = {};     // card moves and card filters are keyed to this session's image ids, which a reload resets
+            state.pos = {}; state.front = []; state.cardFx = {}; state.cardT = {};     // card moves, filters and zoom are keyed to this session's image ids, which a reload resets
             return true;
         }
     } catch (e) {}
@@ -2201,21 +2276,38 @@ function hitCell(rects, p) {           // the last cell under the point, so a sl
 
 /* Cover-fit an image into a rect, then apply zoom and a pan offset expressed as a
    fraction of the rect, so the same numbers work at preview and export size. */
-function clampAxis(c, d, r0, rl) {
-    const half = d / 2;
-    return d >= rl ? Math.min(r0 + half, Math.max(r0 + rl - half, c)) : Math.min(r0 + rl - half, Math.max(r0 + half, c));
-}
+/* Where a picture goes inside a rectangle r, for the transform t = { z, ox, oy, q, rot, f }: zoom, a shift as
+   fractions of r, and an orientation. The orientation is a mirror (f, across the picture's own vertical axis),
+   then q quarter turns, then rot degrees, all clockwise on screen. The Flip and Rotate 90 buttons compose with it
+   as screen operations (see flipT), so each does what it says on the picture as you see it, and Straighten always
+   turns clockwise. At zoom 1 the picture just covers r however it is turned, so straightening never leaves empty
+   corners. The centre is kept where the picture still covers r (or, when it is smaller, stays within r), measured
+   along the picture's own axes. */
 function fit(bmp, r, t) {
-    const s = Math.max(r.w / bmp.width, r.h / bmp.height) * t.z;
-    const dw = bmp.width * s, dh = bmp.height * s;
-    const cx = clampAxis(r.x + r.w / 2 + t.ox * r.w, dw, r.x, r.w);
-    const cy = clampAxis(r.y + r.h / 2 + t.oy * r.h, dh, r.y, r.h);
-    return { s: s, dx: cx - dw / 2, dy: cy - dh / 2, dw: dw, dh: dh, cx: cx, cy: cy };
+    const w = bmp.width, h = bmp.height, fx = t.f ? -1 : 1, th = ((t.q || 0) * 90 + (t.rot || 0)) * Math.PI / 180;
+    const co = Math.abs(Math.cos(th)), si = Math.abs(Math.sin(th)), hw = r.w / 2, hh = r.h / 2;
+    const ex = hw * co + hh * si, ey = hw * si + hh * co;               // the rectangle's half-extent along the picture's axes
+    const s = Math.max(2 * ex / w, 2 * ey / h) * t.z, a = w * s / 2, b = h * s / 2;
+    const dx = t.ox * r.w, dy = t.oy * r.h, c1 = Math.cos(-th), s1 = Math.sin(-th);              // the wanted shift, in the picture's axes
+    const lx = Math.abs(a - ex), ly = Math.abs(b - ey);
+    const px = Math.min(lx, Math.max(-lx, dx * c1 - dy * s1)), py = Math.min(ly, Math.max(-ly, dx * s1 + dy * c1));
+    const c2 = Math.cos(th), s2 = Math.sin(th);
+    return { s: s, cx: r.x + hw + px * c2 - py * s2, cy: r.y + hh + px * s2 + py * c2, th: th, fx: fx, a: a, b: b, w: w, h: h };
 }
 function clampT(bmp, r, t) {
     const f = fit(bmp, r, t);
     t.ox = (f.cx - (r.x + r.w / 2)) / r.w;
     t.oy = (f.cy - (r.y + r.h / 2)) / r.h;
+}
+function paintFit(ctx, src, f) {          // draw a picture at its fit: centred, mirrored if asked, turned
+    ctx.save();
+    ctx.translate(f.cx, f.cy); ctx.rotate(f.th); ctx.scale(f.fx, 1);
+    ctx.drawImage(src, -f.a, -f.b, 2 * f.a, 2 * f.b);
+    ctx.restore();
+}
+function toImgPx(f, p) {                  // a point on the canvas -> a pixel of the picture, undoing turn, mirror and scale
+    const qx = p.x - f.cx, qy = p.y - f.cy, c = Math.cos(-f.th), sn = Math.sin(-f.th);
+    return { x: (qx * c - qy * sn) * f.fx / f.s + f.w / 2, y: (qx * sn + qy * c) / f.s + f.h / 2 };
 }
 /* alt, for the preview only: { src, k, sc }. A big photo is also kept as a 2048px copy (im.prev). When
    the screen scale (sc, screen pixels per logical pixel) times the fit scale is no more than the
@@ -2225,7 +2317,7 @@ function drawFit(ctx, bmp, r, t, alt) {
     const f = fit(bmp, r, t);
     ctx.save();
     ctx.beginPath(); ctx.rect(r.x, r.y, r.w, r.h); ctx.clip();
-    ctx.drawImage(alt && f.s * alt.sc <= alt.k ? alt.src : bmp, f.dx, f.dy, f.dw, f.dh);
+    paintFit(ctx, alt && f.s * alt.sc <= alt.k ? alt.src : bmp, f);
     ctx.restore();
     return f.s;
 }
@@ -2247,7 +2339,7 @@ function cards(W, H) {
     const imgs = Array.from(IMGS.values()), k = imgs.length;
     if (!k) return [];
     const rnd = mulberry(state.seed), pol = state.layout === "polaroid";
-    const box = areaBox(W, H), tbSide = state.tbEdge !== "off" && state.tb > 0 ? state.tbEdge : "", cols = Math.max(1, Math.round(Math.sqrt(k * box.w / box.h))), rows = Math.ceil(k / cols);
+    const box = areaBox(W, H), cols = Math.max(1, Math.round(Math.sqrt(k * box.w / box.h))), rows = Math.ceil(k / cols);
     const cw = box.w / cols, ch = box.h / rows;
     const slots = [];
     for (let i = 0; i < cols * rows; i++) slots.push(i);
@@ -2258,17 +2350,20 @@ function cards(W, H) {
         const cy = box.y + (Math.floor(s / cols) + 0.5) * ch + (rnd() - 0.5) * ch * 0.5;
         const rot = (rnd() - 0.5) * 2 * state.stackRot * Math.PI / 180;
         const area = Math.min(cw * ch * state.stackSize, box.w * box.h * 0.8);
-        let w, h;
-        if (pol) { w = Math.sqrt(area / 1.18); h = w * 1.18; }
-        else { const a = Math.min(1.6, Math.max(0.7, im.w / im.h)); w = Math.sqrt(area * a); h = w / a; }
-        const f = Math.min(1, box.w * 0.95 / w, box.h * 0.95 / h);
-        w *= f; h *= f;
-        // keep each card mostly inside the box: clamp the centre by the rotated half-extent, and wholly
-        // inside on the side the taskbar strip is on, so no corner pokes into it
-        const ex = (Math.abs(w * Math.cos(rot)) + Math.abs(h * Math.sin(rot))) / 2;
-        const ey = (Math.abs(w * Math.sin(rot)) + Math.abs(h * Math.cos(rot))) / 2;
-        const fl = tbSide === "left" ? 1 : 0.9, fr = tbSide === "right" ? 1 : 0.9, ft = tbSide === "top" ? 1 : 0.9, fb = tbSide === "bottom" ? 1 : 0.9;
-        return { im: im, cx: Math.min(box.x + box.w - ex * fr, Math.max(box.x + ex * fl, cx)), cy: Math.min(box.y + box.h - ey * fb, Math.max(box.y + ey * ft, cy)), rot: rot, w: w, h: h };
+        let w, h, bw;
+        if (pol) { w = Math.sqrt(area / 1.18); h = w * 1.18; bw = w * state.polBw / 100; }
+        else {
+            /* the photo area has the picture's own proportions, so nothing is cropped at zoom 1, and the border is added around it */
+            const a = Math.min(8, Math.max(0.125, im.w / im.h)), pw = Math.sqrt(area * a), ph = pw / a;
+            bw = Math.min(pw, ph) * state.stackBw / 100; w = pw + 2 * bw; h = ph + 2 * bw;
+        }
+        /* every card sits wholly inside the usable area, tilt included, so a tall or wide picture is never cut off
+           by the edge of the canvas or the taskbar strip */
+        const co = Math.abs(Math.cos(rot)), si = Math.abs(Math.sin(rot)), exw = w * co + h * si, eyh = w * si + h * co;
+        const f = Math.min(1, box.w * 0.95 / exw, box.h * 0.95 / eyh);
+        w *= f; h *= f; bw *= f;
+        const ex = exw * f / 2, ey = eyh * f / 2;
+        return { im: im, cx: Math.min(box.x + box.w - ex, Math.max(box.x + ex, cx)), cy: Math.min(box.y + box.h - ey, Math.max(box.y + ey, cy)), rot: rot, w: w, h: h, b: bw };
     });
     const arr = shuffle(out, rnd);
     arr.forEach(c => { const p = state.pos[c.im.id]; if (p) { c.cx = p.x * W; c.cy = p.y * H; } });
@@ -2286,7 +2381,7 @@ function cardAt(p) {
 }
 const altOf = (im, pv) => pv && im.prev ? { src: im.prev, k: im.prevK, sc: view.k * view.d } : null;
 function cardInner(c) {                // the photo area of a card, in the card's own coordinates
-    const pol = state.layout === "polaroid", w = c.w, h = c.h, b = pol ? w * state.polBw / 100 : Math.min(w, h) * state.stackBw / 100;
+    const pol = state.layout === "polaroid", w = c.w, h = c.h, b = c.b;
     return pol ? { x: -w / 2 + b, y: -h / 2 + b, w: w - 2 * b, h: w - 2 * b } : { x: -w / 2 + b, y: -h / 2 + b, w: w - 2 * b, h: h - 2 * b };
 }
 function drawCard(ctx, c, W, pv) {
@@ -2298,7 +2393,7 @@ function drawCard(ctx, c, W, pv) {
     ctx.fillRect(-w / 2, -h / 2, w, h);
     ctx.shadowColor = "transparent"; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
     const r = cardInner(c);
-    const f = state.cardFx[c.im.id], tfm = { z: 1, ox: 0, oy: 0 };
+    const f = state.cardFx[c.im.id], tfm = state.cardT[c.im.id] || { z: 1, ox: 0, oy: 0 };
     if (fxNeutral(f)) drawFit(ctx, c.im.bmp, r, tfm, altOf(c.im, pv));
     else fxDraw(ctx, r, f, pv, pv ? view.k * view.d : 1, "k:" + c.im.id, 3, W, fxSig(c.im, tfm), o => drawFit(o, c.im.bmp, r, tfm, altOf(c.im, pv)));
     ctx.restore();
@@ -2430,7 +2525,7 @@ function paint() {
     if (im) {   // the part of the image outside the frame, dimmed
         const f = fit(im.bmp, { x: 0, y: 0, w: W, h: H }, state.crop);
         const al = altOf(im, true);
-        c.save(); c.globalAlpha = 0.3; c.drawImage(al && f.s * al.sc <= al.k ? al.src : im.bmp, f.dx, f.dy, f.dw, f.dh); c.restore();
+        c.save(); c.globalAlpha = 0.3; paintFit(c, al && f.s * al.sc <= al.k ? al.src : im.bmp, f); c.restore();
     }
     const spill = state.mode === "collage" && !isCells();     // only tilted cards can reach past the frame; everything else clips itself
     c.save();
@@ -2498,7 +2593,12 @@ function selTarget() {
         const im = IMGS.get(state.crop.img);
         return im ? { t: state.crop, im: im, r: { x: 0, y: 0, w: W, h: H }, label: "crop image" } : null;
     }
-    if (!isCells()) return null;
+    if (!isCells()) {                                // a stack or polaroid card: its picture's zoom and position, inside its photo area
+        const id = ensureSelCard(), im = id && IMGS.get(id), cd = im && cards(W, H).find(q => q.im.id === id);
+        if (!cd) return null;
+        if (!state.cardT[id]) state.cardT[id] = { z: 1, ox: 0, oy: 0 };
+        return { t: state.cardT[id], im: im, r: cardInner(cd), label: shortName(im.name) };
+    }
     const r = lay(W, H)[state.sel], c = cellList()[state.sel];
     const im = c && IMGS.get(c.img);
     return r && im ? { t: c, im: im, r: r, label: cellName() + (state.sel + 1) } : null;
@@ -2519,7 +2619,14 @@ cv.addEventListener("pointerdown", e => {
         const c = cardAt(toLogical(e));
         if (!c) return;
         const id = c.im.id, d0 = dims();
-        if (selCard !== id) { selCard = id; syncUI(); syncFx(); }
+        if (selCard !== id) { selCard = id; syncUI(); syncFx(); syncRepair(); }
+        if (e.shiftKey) {                              // shift-drag moves the picture inside the card instead of the card
+            if (!state.cardT[id]) state.cardT[id] = { z: 1, ox: 0, oy: 0 };
+            drag = { card: id, pan: true, x: e.clientX, y: e.clientY };
+            cv.setPointerCapture(e.pointerId);
+            stage.classList.add("dragging");
+            return;
+        }
         state.front = state.front.filter(x => x !== id).concat(id).slice(-64);
         if (!state.pos[id]) state.pos[id] = { x: c.cx / d0.w, y: c.cy / d0.h };
         drag = { card: id, x: e.clientX, y: e.clientY };
@@ -2540,6 +2647,17 @@ cv.addEventListener("pointermove", e => {
     if (healOn) { hover = toLogical(e); if (stroke) stroke.pts.push(hover); redraw(); return; }
     if (!drag) {
         stage.classList.toggle("can-drag", !!(selTargetUnder(e)));
+        return;
+    }
+    if (drag.card && drag.pan) {
+        const d0 = dims(), cd = cards(d0.w, d0.h).find(q => q.im.id === drag.card), t = state.cardT[drag.card];
+        if (cd && t) {
+            const dx = (e.clientX - drag.x) / view.k, dy = (e.clientY - drag.y) / view.k, co = Math.cos(cd.rot), si = Math.sin(cd.rot), r = cardInner(cd);
+            t.ox += (dx * co + dy * si) / r.w; t.oy += (-dx * si + dy * co) / r.h;     // the pointer's move, turned into the card's own tilted axes
+            clampT(cd.im.bmp, r, t);
+        }
+        drag.x = e.clientX; drag.y = e.clientY;
+        redraw();
         return;
     }
     if (drag.card) {
@@ -2570,6 +2688,18 @@ cv.addEventListener("pointerleave", () => { if (hover) { hover = null; redraw();
 cv.addEventListener("pointerup", endDrag);
 cv.addEventListener("pointercancel", endDrag);
 cv.addEventListener("wheel", e => {
+    if (state.mode === "collage" && !isCells()) {       // a card: zoom its picture
+        const cd = cardAt(toLogical(e));
+        if (!cd) return;
+        e.preventDefault();
+        const id = cd.im.id;
+        if (selCard !== id) { selCard = id; syncFx(); syncRepair(); }
+        const t = state.cardT[id] || (state.cardT[id] = { z: 1, ox: 0, oy: 0 });
+        t.z = Math.min(ZMAX, Math.max(ZMIN, t.z * Math.exp(-e.deltaY * 0.0015)));
+        clampT(cd.im.bmp, cardInner(cd), t);
+        syncUI(); redraw(); persistSoon();
+        return;
+    }
     const tg = targetAt(toLogical(e));
     if (!tg || !tg.t || !tg.im) return;
     e.preventDefault();
@@ -2632,7 +2762,7 @@ function removeImage(id) {
     IMGS.delete(id);
     imagesToCrop();
     ["panels", "grid", "bento", "diagonal"].forEach(k => state.cells[k].forEach((c, i, a) => { if (c && c.img === id) a[i] = null; }));
-    delete state.pos[id];
+    delete state.pos[id]; delete state.cardT[id]; delete state.cardFx[id];
     state.front = state.front.filter(x => x !== id);
     render();
 }
@@ -2651,8 +2781,10 @@ function autofill(cycle) {
     let k = 0;
     for (let i = 0; i < n; i++) {
         if (l[i] && IMGS.has(l[i].img)) continue;
+        const old = l[i];                                  // a cell left over from a settings file: no picture yet, but its zoom, position and orientation
         if (fresh.length) l[i] = tf(fresh.shift());
         else if (cycle) l[i] = tf(ids[k++ % ids.length]);
+        if (old && l[i] !== old) ["z", "ox", "oy", "rot", "q", "f"].forEach(key => { if (old[key] !== undefined) l[i][key] = old[key]; });
     }
 }
 
@@ -2918,16 +3050,20 @@ function syncRepair() {
 /* Fill: the three methods differ only in what is put behind the image. The image, drawn at
    the export size with the current zoom and position, goes on top, so its own pixels are
    never altered. The result is baked into a new image and the crop is pointed at it. */
-function mirrorFill(ux, bmp, f, W, H) {
-    const i0 = Math.floor(-f.dx / f.dw), i1 = Math.floor((W - f.dx) / f.dw);
-    const j0 = Math.floor(-f.dy / f.dh), j1 = Math.floor((H - f.dy) / f.dh);
+function mirrorFill(ux, bmp, f, W, H) {      // tiles of the picture, mirrored alternately, turned and flipped as the picture is
+    const iw = 2 * f.a, ih = 2 * f.b, c = Math.cos(-f.th), sn = Math.sin(-f.th);
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    [[0, 0], [W, 0], [W, H], [0, H]].forEach(p => {              // the frame's corners, in the picture's axes
+        const qx = p[0] - f.cx, qy = p[1] - f.cy, x = qx * c - qy * sn, y = qx * sn + qy * c;
+        x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
+    });
+    const i0 = Math.floor((x0 + iw / 2) / iw), i1 = Math.floor((x1 + iw / 2) / iw), j0 = Math.floor((y0 + ih / 2) / ih), j1 = Math.floor((y1 + ih / 2) / ih);
     if ((i1 - i0 + 1) * (j1 - j0 + 1) > 600) throw new Error("The image is too small in the frame to mirror");
     for (let i = i0; i <= i1; i++) for (let j = j0; j <= j1; j++) {
-        const fx = Math.abs(i) % 2 === 1, fy = Math.abs(j) % 2 === 1;
         ux.save();
-        ux.translate(f.dx + i * f.dw + (fx ? f.dw : 0), f.dy + j * f.dh + (fy ? f.dh : 0));
-        ux.scale(fx ? -1 : 1, fy ? -1 : 1);
-        ux.drawImage(bmp, 0, 0, f.dw, f.dh);
+        ux.translate(f.cx, f.cy); ux.rotate(f.th); ux.scale(f.fx, 1);
+        ux.translate(i * iw, j * ih); ux.scale(Math.abs(i) % 2 === 1 ? -1 : 1, Math.abs(j) % 2 === 1 ? -1 : 1);
+        ux.drawImage(bmp, -iw / 2, -ih / 2, iw, ih);
         ux.restore();
     }
 }
@@ -3019,7 +3155,7 @@ function strokeMask(w, h, sc, rx, ry, P, rad) {
    cell or card also selects it. */
 function healTargetAt(p) {
     const d = dims();
-    const mapFit = (im, r, t) => { const f = fit(im.bmp, r, t); return { im: im, s: f.s, toImg: q => ({ x: (q.x - f.dx) / f.s, y: (q.y - f.dy) / f.s }) }; };
+    const mapFit = (im, r, t) => { const f = fit(im.bmp, r, t); return { im: im, s: f.s, toImg: q => toImgPx(f, q) }; };
     if (state.mode === "crop") { const im = IMGS.get(state.crop.img); return im ? mapFit(im, { x: 0, y: 0, w: d.w, h: d.h }, state.crop) : null; }
     if (state.mode !== "collage") return null;
     if (isCells()) {
@@ -3033,8 +3169,8 @@ function healTargetAt(p) {
     const cd = cardAt(p);
     if (!cd) return null;
     if (selCard !== cd.im.id) { selCard = cd.im.id; syncUI(); syncFx(); syncRepair(); }
-    const f = fit(cd.im.bmp, cardInner(cd), { z: 1, ox: 0, oy: 0 }), co = Math.cos(cd.rot), si = Math.sin(cd.rot);
-    return { im: cd.im, s: f.s, toImg: q => { const dx = q.x - cd.cx, dy = q.y - cd.cy, lx = dx * co + dy * si, ly = -dx * si + dy * co; return { x: (lx - f.dx) / f.s, y: (ly - f.dy) / f.s }; } };
+    const f = fit(cd.im.bmp, cardInner(cd), state.cardT[cd.im.id] || { z: 1, ox: 0, oy: 0 }), co = Math.cos(cd.rot), si = Math.sin(cd.rot);
+    return { im: cd.im, s: f.s, toImg: q => { const dx = q.x - cd.cx, dy = q.y - cd.cy; return toImgPx(f, { x: dx * co + dy * si, y: -dx * si + dy * co }); } };
 }
 function finishStroke() {
     const st = stroke; stroke = null;
@@ -3716,6 +3852,21 @@ function bdApply() {
 }
 $("#btnBento").addEventListener("click", openBento);
 
+/* Removes every loaded picture in one go. Slot filters and the layout stay, since they belong to the slots. */
+function clearImages() {
+    if (busyGuard() || !IMGS.size) return;
+    const n = IMGS.size;
+    if (!confirm("Remove all " + n + " loaded images? The layout, settings and slot filters stay.")) return;
+    IMGS.forEach(freeImage); IMGS.clear();
+    fxCache.clear(); selCard = null;
+    state.pos = {}; state.front = []; state.cardT = {}; state.cardFx = {};
+    ["panels", "grid", "bento", "diagonal"].forEach(k => { state.cells[k] = state.cells[k].map(() => null); });
+    state.crop = tf(null);
+    render();
+    notify("Cleared " + n + (n === 1 ? " image" : " images"));
+}
+$("#btnClearImgs").addEventListener("click", clearImages);
+
 /* ---------- filters ----------
    One set of adjustments per slot: each collage cell, slice or card, and the crop image. A slot's
    filter is stored apart from its picture, so swapping two pictures leaves each slot's look where
@@ -3879,7 +4030,7 @@ function fxDraw(ctx, rect, f, pv, sc, key, seed, Wl, sigExtra, content) {
     ctx.drawImage(cv, rect.x, rect.y, ow / sc, oh / sc);
     if (!pv) cv.width = 0;
 }
-const fxSig = (im, c, alt) => [im.id, im.ver || 0, c.z, c.ox, c.oy, im.prev ? im.prevK : 0].join(",");
+const fxSig = (im, c) => [im.id, im.ver || 0, c.z, c.ox, c.oy, c.rot || 0, c.q || 0, c.f ? 1 : 0, im.prev ? im.prevK : 0].join(",");
 
 /* ---------- export file name ----------
    Typed in the Export panel and cleaned before use: path characters and control characters are
@@ -3982,7 +4133,7 @@ function syncUI() {
         act.add("collage"); act.add(state.layout);
         if (isCells()) act.add("cells"); else act.add("scatter");
     }
-    if (state.mode === "crop" || isCells()) act.add("selectable");
+    if (state.mode === "crop" || isCells() || selTarget()) act.add("selectable");
     if (state.fmt !== "png") act.add("lossy");
     if (state.sizeSel === "custom") act.add("custom");
     if (state.ratio === "custom") act.add("rcustom");
@@ -4002,13 +4153,17 @@ function syncUI() {
     z.disabled = !st; $("#btnResetT").disabled = !st; $("#btnFitW").disabled = !st; $("#btnFitH").disabled = !st;
     z.value = st ? st.t.z : 1;
     $("#zoomOut").textContent = (st ? st.t.z : 1).toFixed(2) + "x";
+    const tt = st ? st.t : {};
+    $("#rot").disabled = !st; $("#rot").value = tt.rot || 0; $("#rotOut").textContent = (tt.rot || 0).toFixed(1) + " deg";
+    $("#btnFlipH").disabled = !st; $("#btnFlipV").disabled = !st; $("#btnRot90").disabled = !st;
     $("#stageNote").textContent = state.mode === "crop"
         ? "Drag the image to position it, mouse wheel to zoom. The bright area is what gets exported."
         : isCells()
             ? "Click a cell to select it, then click an image to place it. Drag inside a cell to reposition, wheel to zoom. Drag the small handle in a cell's corner onto another cell to swap them."
-            : "Every loaded image is placed. Drag a card, or the small handle in its corner, to move it, and it comes to the front. Reshuffle or type a seed for a new arrangement.";
+            : "Every loaded image is placed. Drag a card, or the small handle in its corner, to move it, and it comes to the front. Wheel over a card to zoom its picture and Shift-drag to move the picture inside it. Reshuffle or type a seed for a new arrangement.";
 }
 function renderTray() {
+    $("#trayActions").hidden = !IMGS.size;
     const tray = $("#tray");
     tray.replaceChildren();
     const c = isCells() ? cellList()[state.sel] : null;
@@ -4123,16 +4278,47 @@ $("#zoom").addEventListener("input", e => {
     $("#zoomOut").textContent = st.t.z.toFixed(2) + "x";
     updateInfo(); redraw(); persistSoon();
 });
-$("#btnResetT").addEventListener("click", () => { const st = selTarget(); if (st) { st.t.z = 1; st.t.ox = 0; st.t.oy = 0; render(); } });
+$("#btnResetT").addEventListener("click", () => { const st = selTarget(); if (st) { st.t.z = 1; st.t.ox = 0; st.t.oy = 0; delete st.t.rot; delete st.t.q; delete st.t.f; render(); } });
+function changeT(fn) {                 // a change to the selected picture's transform, then keep it over its frame
+    const st = selTarget();
+    if (!st) return;
+    fn(st.t);
+    clampT(st.im.bmp, st.r, st.t);
+    render();
+}
+/* The buttons act on the picture as you see it. Mirroring the whole look left to right turns the orientation
+   (a mirror, q quarter turns, rot degrees) into: toggle the mirror, q -> -q, rot -> -rot. Top to bottom is the same
+   with q -> 2 - q. Turning 90 degrees clockwise on screen just adds a quarter turn. */
+function flipT(t, vertical) {
+    t.q = (((vertical ? 2 : 0) - (t.q || 0)) % 4 + 4) % 4;
+    t.f = !t.f;
+    if (t.rot) t.rot = -t.rot;
+    if (!t.q) delete t.q;
+    if (!t.f) delete t.f;
+    if (!t.rot) delete t.rot;
+}
+$("#btnFlipH").addEventListener("click", () => changeT(t => flipT(t, false)));
+$("#btnFlipV").addEventListener("click", () => changeT(t => flipT(t, true)));
+$("#btnRot90").addEventListener("click", () => changeT(t => { t.q = ((t.q || 0) + 1) % 4; if (!t.q) delete t.q; }));
+$("#rot").addEventListener("input", e => {
+    const st = selTarget();
+    if (!st) return;
+    const v = Math.round(Number(e.target.value) * 10) / 10;
+    if (v) st.t.rot = v; else delete st.t.rot;
+    clampT(st.im.bmp, st.r, st.t);
+    $("#rotOut").textContent = v.toFixed(1) + " deg";
+    updateInfo(); redraw(); persistSoon();
+});
 $("#btnFill").addEventListener("click", () => { autofill(true); render(); });
 $("#btnClear").addEventListener("click", () => { state.cells[state.layout] = []; render(); });
 $("#btnShuffle").addEventListener("click", () => { state.seed = Math.floor(Math.random() * 2147483647); state.pos = {}; state.front = []; render(); });
-function fitAxis(a) {
+function fitAxis(a) {                  // the picture's outline, as turned, matches the frame's width or height
     const st = selTarget();
     if (!st) return;
-    const b = st.im.bmp, s0 = Math.max(st.r.w / b.width, st.r.h / b.height);
-    const s = a === "w" ? st.r.w / b.width : st.r.h / b.height;
-    st.t.z = Math.min(ZMAX, Math.max(ZMIN, s / s0)); st.t.ox = 0; st.t.oy = 0;
+    const b = st.im.bmp, t = st.t, Th = ((t.q || 0) * 90 + (t.rot || 0)) * Math.PI / 180, co = Math.abs(Math.cos(Th)), si = Math.abs(Math.sin(Th));
+    const s0 = fit(b, st.r, { z: 1, ox: 0, oy: 0, rot: t.rot, q: t.q, f: t.f }).s;       // the scale that just covers, at this turn
+    const s = a === "w" ? st.r.w / (b.width * co + b.height * si) : st.r.h / (b.width * si + b.height * co);
+    t.z = Math.min(ZMAX, Math.max(ZMIN, s / s0)); t.ox = 0; t.oy = 0;
     render();
 }
 $("#btnFitW").addEventListener("click", () => fitAxis("w"));
@@ -4202,7 +4388,7 @@ function shortName(n) {
     const a = Array.from(String(n));
     return a.length <= 22 ? a.join("") : a.slice(0, 8).join("") + "..." + a.slice(-11).join("");
 }
-const fxInputs = {};
+const fxInputs = {}, fxGroups = {};
 (function buildFxPanel() {
     const body = $("#fxBody"), pre = $("#fxPresets");
     Object.keys(FX_PRESETS).forEach(name => {
@@ -4211,16 +4397,32 @@ const fxInputs = {};
         b.addEventListener("click", () => fxCommit(cleanFx(FX_PRESETS[name])));
         pre.appendChild(b);
     });
+    let saved = {};
+    try { saved = JSON.parse(store.get("fxg") || "{}") || {}; } catch (e) { saved = {}; }
+    const ns = "http://www.w3.org/2000/svg";
+    let gbody = null, gname = "";
     FX.forEach(d => {
-        if (d.g) body.appendChild(el("div", "fl", d.g));
+        if (d.g) {                                  // a group of sliders that folds, with a dot when anything in it is set
+            gname = d.g;
+            const grp = el("div", "fxg"), head = el("button", "fxg-h"), dot = el("i", "fxg-dot"), svg = document.createElementNS(ns, "svg"), pl = document.createElementNS(ns, "polyline");
+            head.type = "button"; dot.hidden = true;
+            svg.setAttribute("viewBox", "0 0 12 12"); svg.setAttribute("aria-hidden", "true"); pl.setAttribute("points", "2,4 6,8 10,4"); svg.appendChild(pl);
+            head.appendChild(svg); head.appendChild(document.createTextNode(d.g)); head.appendChild(dot);
+            gbody = el("div", "fxg-b");
+            const set = (closed, persist) => { grp.classList.toggle("closed", closed); head.setAttribute("aria-expanded", String(!closed)); if (persist) { saved[d.g] = closed; store.set("fxg", JSON.stringify(saved)); } };
+            set(saved[d.g] === true, false);
+            head.addEventListener("click", () => set(!grp.classList.contains("closed"), true));
+            grp.appendChild(head); grp.appendChild(gbody); body.appendChild(grp);
+            fxGroups[d.g] = dot;
+        }
         const lab = el("label", "f"), top = el("span", "lab", d.label + " "), val = el("span", "val"), inp = el("input");
         inp.type = "range"; inp.min = d.min; inp.max = d.max; inp.step = 1; inp.value = 0;
         inp.title = "Double-click to zero";
         inp.addEventListener("input", () => fxSet(d.k, inp.value));
         inp.addEventListener("dblclick", () => fxSet(d.k, 0));
         top.appendChild(val); lab.appendChild(top); lab.appendChild(inp);
-        body.appendChild(lab);
-        fxInputs[d.k] = { input: inp, val: val, d: d };
+        gbody.appendChild(lab);
+        fxInputs[d.k] = { input: inp, val: val, d: d, group: gname };
     });
 })();
 function fxCommit(f) {                 // store a whole filter (null clears) on the current target
@@ -4246,6 +4448,10 @@ function syncFx() {
         if (document.activeElement !== q.input) q.input.value = v;
         q.val.textContent = (d.min < 0 && v > 0 ? "+" : "") + v;
     });
+    Object.keys(fxGroups).forEach(g => { fxGroups[g].hidden = !(f && FX.some(d => fxInputs[d.k].group === g && f[d.k])); });   // a dot on a group with something set
+    $("#ehName").textContent = t ? t.label : "nothing selected";
+    $("#ehFx").hidden = !f;
+    $("#stabDot").hidden = !f;
     $$("#fxPresets button").forEach(b => { b.disabled = !t; });
     $("#fxReset").disabled = !t || fxNeutral(f);
     $("#fxAll").disabled = !t || state.mode === "crop";
@@ -4260,13 +4466,48 @@ $("#fxAll").addEventListener("click", () => {
     render(); notify("Filter applied to every slot");
 });
 
-/* ---------- collapsible side panels ---------- */
-(function foldPanels() {
+/* The side column scrolls inside itself, between the tabs and the pinned export bar. Its height is the window
+   minus where it starts on the page, measured, so the export bar is never pushed below the fold. */
+function sizeSide() {
+    const wk = $(".wk");
+    if (!wk) return;
+    const hd = $(".topbar");
+    if (hd) root.style.setProperty("--hdr", Math.round(hd.getBoundingClientRect().height) + "px");   // the header can be two rows on a phone
+    const top = wk.getBoundingClientRect().top + window.scrollY;
+    root.style.setProperty("--side-h", Math.max(440, window.innerHeight - top - 14) + "px");
+}
+window.addEventListener("resize", sizeSide);
+/* ---------- side panel: tabs, folding, typed values ---------- */
+const SIDE_TABS = ["src", "lay", "edit"];
+function showSideTab(id, focus) {
+    if (SIDE_TABS.indexOf(id) < 0) id = "src";
+    SIDE_TABS.forEach(t => {
+        const on = t === id, btn = $("#stab-" + t);
+        btn.setAttribute("aria-selected", String(on)); btn.tabIndex = on ? 0 : -1;
+        $("#sp-" + t).hidden = !on;
+    });
+    store.set("stab", id);
+    if (focus) $("#stab-" + id).focus();
+}
+(function sidePanel() {
+    SIDE_TABS.forEach((id, i) => {
+        const btn = $("#stab-" + id);
+        btn.addEventListener("click", () => showSideTab(id));
+        btn.addEventListener("keydown", e => {                       // arrow keys, Home and End move between tabs
+            const n = SIDE_TABS.length, j = e.key === "ArrowRight" ? (i + 1) % n : e.key === "ArrowLeft" ? (i + n - 1) % n : e.key === "Home" ? 0 : e.key === "End" ? n - 1 : -1;
+            if (j < 0) return;
+            e.preventDefault(); showSideTab(SIDE_TABS[j], true);
+        });
+    });
+    showSideTab(store.get("stab"));
+
     let saved = {};
     try { saved = JSON.parse(store.get("fold") || "{}") || {}; } catch (e) { saved = {}; }
     const closedByDefault = { Selected: true, Filter: true, Repair: true, Settings: true };
-    const panels = $$(".wk-side > .panel"), setters = [];
+    const panels = $$(".wk-side .spane > .panel"), setters = [], toggle = $("#foldToggle");
     const save = () => store.set("fold", JSON.stringify(saved));
+    const allOpen = () => panels.every(p => !p.classList.contains("collapsed"));
+    const syncToggle = () => { toggle.textContent = allOpen() ? "Collapse all" : "Expand all"; };      // mixed counts as "Expand all", the usual wish
     panels.forEach(p => {
         const head = p.querySelector(".panel-head"), h2 = head && head.querySelector("h2");
         if (!h2) return;
@@ -4282,15 +4523,51 @@ $("#fxAll").addEventListener("click", () => {
             p.classList.toggle("collapsed", closed);
             btn.setAttribute("aria-expanded", String(!closed));
             if (persist) { saved[name] = closed; save(); }
+            syncToggle();
         };
         set(Object.prototype.hasOwnProperty.call(saved, name) ? saved[name] === true : !!closedByDefault[name], false);
         head.addEventListener("click", e => { if (!btn.contains(e.target)) set(!p.classList.contains("collapsed"), true); });
         btn.addEventListener("click", () => set(!p.classList.contains("collapsed"), true));
         setters.push(set);
     });
-    $("#foldAll").addEventListener("click", () => setters.forEach(f => f(true, true)));
-    $("#unfoldAll").addEventListener("click", () => setters.forEach(f => f(false, true)));
+    toggle.addEventListener("click", () => { const close = allOpen(); setters.forEach(f => f(close, true)); });
+    syncToggle();
+    enhanceSliders();
+    sizeSide();
 })();
+/* Every slider in the side panel gets its value as something you can click and type into. Sliders that
+   have a row to themselves also go on one line: label, slider, value. */
+function enhanceSliders() {
+    $$(".wk-side label.f").forEach(l => {
+        const inp = l.querySelector('input[type="range"]'), val = l.querySelector(".val");
+        if (!inp || !val) return;
+        if (!l.parentElement.classList.contains("grid")) l.classList.add("sl");     // two sliders sharing a row stay stacked
+        val.tabIndex = 0; val.setAttribute("role", "button"); val.title = "Click to type a value";
+        const edit = () => {
+            if (val.querySelector("input")) return;
+            const prev = val.textContent, box = el("input", "numval");
+            box.type = "text"; box.inputMode = "decimal"; box.value = inp.value; box.setAttribute("aria-label", "Value");
+            val.textContent = ""; val.appendChild(box); box.focus(); box.select();
+            const done = ok => {
+                if (!val.contains(box)) return;
+                const v = parseFloat(String(box.value).replace(",", "."));
+                val.textContent = prev;
+                if (ok && isFinite(v)) {
+                    const mn = +inp.min, mx = +inp.max, st = +inp.step || 1;
+                    inp.value = +Math.min(mx, Math.max(mn, Math.round((v - mn) / st) * st + mn)).toFixed(4);
+                    inp.dispatchEvent(new Event("input", { bubbles: true }));
+                }
+            };
+            box.addEventListener("keydown", e => {
+                if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); done(true); val.focus(); }
+                else if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); done(false); val.focus(); }
+            });
+            box.addEventListener("blur", () => done(true));
+        };
+        val.addEventListener("click", edit);
+        val.addEventListener("keydown", e => { if (e.target === val && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); edit(); } });   // not for keys typed inside the box
+    });
+}
 
 /* ---------- version, in the footer only ---------- */
 $("#footVer").textContent = "v" + APP.version;

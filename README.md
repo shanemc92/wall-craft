@@ -17,8 +17,9 @@ as a static page. Images are decoded and drawn in your browser and never uploade
   the whole cell moves, including its own zoom and position, so each picture keeps its framing. A ghost
   thumbnail follows the pointer and the target cell is outlined. Dropping on an empty cell moves the image
   there. With the keyboard, focus a handle and use the arrow keys to swap with the neighbouring cell.
-- Every cell has its own reposition and zoom: drag inside a cell, use the wheel, or the Selected panel.
-  Fit width and Fit height set the zoom so that edge of the image matches the cell.
+- Every cell has its own reposition, zoom and orientation: drag inside a cell, use the wheel, or the Selected
+  panel. Fit width and Fit height set the zoom so that edge of the image matches the cell. The same panel flips,
+  rotates and straightens the picture (see Flip, rotate and straighten below).
 - **Panels**: columns by rows with a gap, an outer margin and a border of your choice. Gap, margin and border
   are tenths of a percent of the width, so a layout looks the same at every export size.
 - **Grid**: columns by rows, edge to edge, no gaps or borders, on whole-pixel edges so there are no seams. One
@@ -28,7 +29,17 @@ as a static page. Images are decoded and drawn in your browser and never uploade
 - **Stack** and **Polaroid**: every loaded image is scattered over an even grid with random tilt and a
   shadow, optionally framed as a polaroid. Drag a card, or the small handle in its corner, to move it (it comes
   to the front). With the keyboard, focus a handle and use the arrow keys to nudge it. Each has its own
-  border width and colour.
+  border width and colour. Every card sits wholly inside the usable area, tilt included, so the canvas edge
+  and the taskbar strip never cut a picture off.
+  - **Stack cards follow their picture's own shape.** The photo area has exactly the proportions of the
+    picture, with the border added around it, so a panorama or a tall portrait is shown whole, not cropped
+    to a fixed ratio. (Older builds clamped cards to between 0.7 and 1.6.)
+  - **Polaroid cards have a square photo area**, like a real polaroid, so a picture is cropped to a square
+    at first. Use Fit width to show the whole of a wide picture, or Fit height for a tall one.
+  - **Zoom, fit and move the picture inside a card** with the Selected panel (zoom slider, Fit width, Fit
+    height, flips, Rotate 90, Straighten, Reset), the same as for a cell. Click a card to choose it. Wheel over a card to zoom its picture,
+    and Shift-drag to move the picture inside the card (a plain drag still moves the card). The move follows
+    the card's own tilted axes. Filters and the heal brush follow the zoomed picture.
 - Stack and polaroid layouts come from a seed. Type one to reproduce an arrangement, or Reshuffle for a new
   one. Changing the seed discards manual card moves.
 
@@ -180,11 +191,28 @@ cannot.
   export. The name is not remembered between visits, so an old name is never reused by accident.
 - A warning appears when a source is being enlarged to fill the export size.
 
-## Collapsible side panels
+## The side panel
 
-Every section of the left column folds: click its header, or focus the heading and press Enter or Space. The
-header keeps its title and count when folded. Expand all and Collapse all sit above the first section, and your
-choices are remembered between visits. Selected, Filter, Repair and Settings start folded.
+The left column is organised by task, not by feature, so you rarely scroll and never hunt for a section.
+
+- **Three tabs** along the top. **Source** has Images and Settings. **Layout** has Canvas (mode, ratio, export
+  size, background) and Collage (layout and its controls, the taskbar offset). **Edit** has Selected, Filter and
+  Repair, and opens on an "Editing" strip that names the slot you are working on, with a "filter on" badge. The Edit
+  tab shows a dot when that slot has a filter. Arrow keys, Home and End move between tabs, and the last tab you used
+  is remembered.
+- **A pinned export bar** under the tabs is always on screen, whichever tab you are on: file name, format
+  (PNG, JPEG, WebP), a quality slider when the format is lossy, the Export image button, the "Saves as" line
+  and Check size. Enter in the name field exports.
+- **Sliders sit on one line**: label, slider, value. Click a value, or focus it and press Enter, to type an exact
+  number. Enter or clicking away applies it (it is clamped to the slider's range and step), Escape cancels.
+- **Filter groups fold.** Light, Colour and Effects each fold on their own, and a dot beside a group's name shows that
+  something in it is set, even when it is folded. Presets sit above the groups.
+- **Sections fold.** Click a header, or focus the heading and press Enter or Space. The header keeps its title and
+  its count when folded. The button beside the tabs reads Collapse all when everything is open and Expand all
+  otherwise. Selected, Filter, Repair and Settings start folded, and your choices are remembered.
+- **The column scrolls inside itself** between the tabs and the export bar, sized to the window, so the preview
+  and the export bar never move. On a narrow screen the tabs stick to the top of the window and the export bar to
+  the bottom.
 
 ## Settings files
 
@@ -196,11 +224,31 @@ Load settings reads it back, validating each field. `Ctrl+S` saves, `Ctrl+O` loa
 in this browser between visits. Images are held in memory only, so after a reload the settings come back and
 the pictures have to be loaded again.
 
+## Flip, rotate and straighten
+
+The Selected panel (Edit tab) turns the picture in the chosen slot: the crop image, a cell or slice, or a card.
+Each slot has its own orientation, and it stays with the picture when two pictures are swapped.
+
+- **Straighten** is a slider from -45 to 45 degrees in 0.1 steps, for a crooked horizon. Positive is clockwise.
+  You can click its value and type an exact figure.
+- **Flip horizontal** and **Flip vertical** mirror the picture as you see it. **Rotate 90** turns it a quarter turn
+  clockwise. They compose the way you would expect on screen: Rotate 90 then Flip horizontal mirrors the turned
+  picture, and flipping a picture you have already straightened mirrors the tilt too, so the slider still turns
+  clockwise afterwards.
+- A turned picture is scaled so it still covers its cell at zoom 1, so straightening never leaves empty corners, and
+  panning is kept to where the picture still covers. Zoom out below 1 to see the whole turned picture.
+- Fit width and Fit height measure the turned picture's outline. Reset clears zoom, position, flips and turn.
+- Filters, the heal brush and Fill bars all follow the turned picture, and Mirror fill reflects it in its own axes.
+
 ## Getting images in
 
 Drop files on the Images panel or on the preview, click to browse, or copy an image and paste with `Ctrl+V`.
 Dragging an image straight out of a web page often hands the browser a link rather than a file, which the
 page cannot fetch because the CSP blocks every network request. Copy and paste is the reliable route.
+
+**Clear all images** (under the thumbnails, once something is loaded) removes every loaded picture after a
+prompt. The layout, settings and the filters on slots stay, and the cells and crop are left empty. Each picture
+also has its own x to remove just that one.
 
 ## Where the data goes
 
@@ -219,7 +267,9 @@ canvas.
   full image. Zoom in far enough and the preview switches to the full image on its own.
 - Settings files from before Slices was folded into Grid still load: they become a one-row grid with the same
   number of columns.
-- Card positions from dragging, and Stack or Polaroid filters, are tied to the order images were loaded, so they
+- A cell's zoom, position and orientation come back with a settings file, and are applied to whichever picture then
+  fills that cell, so load the same images in the same order to get the same result.
+- Card positions from dragging, Stack or Polaroid filters, and a card picture's zoom, position and orientation, are tied to the order images were loaded, so they
   come back with a settings file only if you load the same images in the same order. They are dropped on a plain
   page reload. Filters on cells, slices and the crop image belong to their slot and always come back.
 - A settings file over 2 MB is refused (they are a few KB).
