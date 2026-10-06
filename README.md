@@ -177,11 +177,15 @@ cannot.
 
 ### Export
 
-- Standard sizes per ratio. 16:9: 1280x720 up to 7680x4320. 21.5:9: 2580x1080, 3440x1440, 5160x2160,
-  5120x2160. 16:10: 1280x800 up to 3840x2400. 4:3: 1024x768 up to 3200x2400. 1:1: 1024x1024 up to 4096x4096. A custom ratio lists widths
-  from 1280 to 5120 with the height worked out, or take a custom width. No side goes over 8192.
-- The export size sets the real aspect, so 5120x2160 (2.370) gives a slightly narrower frame than
-  3440x1440 (2.389).
+- Standard sizes per ratio. 16:9: 1280x720 up to 7680x4320. 21.5:9: 2580x1080, 3440x1440, 5160x2160.
+  16:10: 1280x800 up to 3840x2400. 4:3: 1024x768 up to 3200x2400. 1:1: 1024x1024 up to 4096x4096. A custom ratio lists
+  widths from 1280 to 5120 with the height worked out.
+- **Custom width** and **Custom height** are the last two entries of the size list. Pick one and type a number
+  (320 to 8192): with Custom width the height follows the ratio, and with Custom height the width follows it. Choosing
+  either starts from the size you were already on. No side goes over 8192, and if the other side would, both are
+  scaled down together.
+- 21.5:9 is the exact 43:18 ratio, which is 5160x2160. 5120x2160 is 2.370 and is not offered. A saved session
+  or settings file that used it moves to 5160x2160.
 - PNG (lossless), JPEG or WebP with a quality slider. Check size encodes without downloading so you can see
   the file size first.
 - Set the file name before saving. The field shows the default as a placeholder and a live "Saves as" line
